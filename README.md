@@ -2,17 +2,21 @@
 [![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=23200868)
 # :checkered_flag: QuickQXD
 
-Breve descrição do que o seu projeto faz.
+O QuickQXD é um aplicativo mobile desenvolvido em Kotlin que tem como objetivo facilitar a comunicação entre moradores e fornecedores locais de água e gás na cidade de Quixadá. A plataforma permite que usuários realizem pedidos de forma rápida e organizada, enquanto os fornecedores recebem e gerenciam as solicitações de maneira simples e eficiente.
+
+O projeto busca promover inclusão digital, otimizar a prestação de serviços essenciais e fortalecer o comércio local por meio do uso da tecnologia.
 
 ## :technologist: Membros da equipe
 
-Matrícula, nome e curso dos participantes.
+ Abraão Levi  de Andrade P Vitoriano, 548324, SI
 
 ## :bulb: Objetivo Geral
-Descrever o objetivo de geral do projeto
+Desenvolver e implementar o aplicativo mobile QuickQXD, com o propósito de facilitar o acesso da população aos serviços de compra de água e gás na cidade de Quixadá, promovendo inclusão digital, melhoria na comunicação entre clientes e fornecedores locais e maior eficiência na prestação de serviços essenciais.
 
 ## :eyes: Público-Alvo
-Público-alvo do projeto
+O projeto QuickQXD é destinado aos moradores da cidade de Quixadá, especialmente aqueles que utilizam serviços de entrega de água e gás no dia a dia, incluindo pessoas com dificuldade de locomoção ou acesso limitado a serviços digitais.
+
+Também contempla pequenos fornecedores locais de água e gás, que poderão utilizar a plataforma para organizar pedidos, melhorar o atendimento e ampliar sua presença digital.
 
 ## :star2: Impacto Esperado
 Descreva o impacto esperado do projeto em relação ao público alvo
