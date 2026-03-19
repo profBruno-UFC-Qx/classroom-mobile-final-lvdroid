@@ -1,5 +1,6 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/AR7CADm8)
 [![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=23200868)
+
 # :checkered_flag: QuickQXD
 
 O QuickQXD é um aplicativo mobile desenvolvido em Kotlin que tem como objetivo facilitar a comunicação entre moradores e fornecedores locais de água e gás na cidade de Quixadá. A plataforma permite que usuários realizem pedidos de forma rápida e organizada, enquanto os fornecedores recebem e gerenciam as solicitações de maneira simples e eficiente.
@@ -19,12 +20,32 @@ O projeto QuickQXD é destinado aos moradores da cidade de Quixadá, especialmen
 Também contempla pequenos fornecedores locais de água e gás, que poderão utilizar a plataforma para organizar pedidos, melhorar o atendimento e ampliar sua presença digital.
 
 ## :star2: Impacto Esperado
-Descreva o impacto esperado do projeto em relação ao público alvo
+Espera-se que o QuickQXD contribua para a melhoria do acesso a serviços essenciais de água e gás na cidade de Quixadá, tornando o processo de solicitação mais rápido, organizado e acessível para a população.
+
+O projeto também deve promover a inclusão digital de pequenos fornecedores locais, auxiliando na modernização de seus serviços e na ampliação de suas oportunidades de atendimento. Além disso, busca-se reduzir falhas na comunicação, atrasos nas entregas e dificuldades enfrentadas por moradores, especialmente aqueles com limitações de mobilidade, fortalecendo a economia local e incentivando o uso da tecnologia como ferramenta de transformação social.
 
 
 ## :triangular_flag_on_post:	 Principais funcionalidades da aplicação
 
-Descreva ou liste brevemente as principais funcionalidades da aplicação que será desenvolvida. 
+Cadastro de usuários (clientes e fornecedores);
+
+Login e autenticação no aplicativo;
+
+Visualização de fornecedores locais de água e gás;
+
+Lista de produtos disponíveis (galões de água, botijão de gás, entre outros);
+
+Realização de pedidos diretamente pelo aplicativo;
+
+Envio de localização para facilitar a entrega;
+
+Notificação para fornecedores quando um novo pedido for realizado;
+
+Histórico de pedidos dos usuários;
+
+Integração opcional com WhatsApp para contato rápido com o fornecedor;
+
+Interface simples e acessível para facilitar o uso pela comunidade.
 
 ---
 
