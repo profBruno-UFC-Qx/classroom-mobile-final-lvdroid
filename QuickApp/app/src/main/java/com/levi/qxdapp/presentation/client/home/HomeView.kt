@@ -6,12 +6,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -23,6 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,17 +42,43 @@ val RedClosed = Color(0xFFEA4335)
 
 @Composable
 fun HomeView() {
-     Column(
-          modifier = Modifier
-               .fillMaxSize()
-               .background(BackgroundGray)
-     ) {
-         HeaderSection()
-         MapPlaceholder()
-         StoreListSection()
+    val listState = rememberLazyListState()
 
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(BackgroundGray)
+    ) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            item { HeaderSection() }
+            item { MapPlaceholder() }
+            item { StoreListHeader() }
+            items(3) { index ->
+                val isOpen = index != 2
+                Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    StoreCard(
+                        name = if (index == 0) "JP Águas e Gás" else "Gás Express Quixadá",
+                        isOpen = isOpen,
+                        deliveryTime = if (index == 0) "~15 min" else "~25 min",
+                        distance = if (index == 0) "1.2km" else "2.5km",
+                        rating = if (index == 0) "4.8" else "4.5"
+                    )
+                }
+            }
+        }
 
-     }
+        // Scrollbar vertical à direita
+        VerticalScrollbar(
+            listState = listState,
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .fillMaxHeight()
+                .padding(end = 4.dp, top = 4.dp, bottom = 4.dp)
+        )
+    }
 }
 
 @Composable
@@ -147,36 +179,26 @@ fun MapPlaceholder() {
 }
 
 @Composable
-fun StoreListSection() {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+fun StoreListHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text("Locais de Venda", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextDark)
+        Surface(
+            color = BluePrimary.copy(alpha = 0.1f),
+            shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Locais de Venda", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextDark)
-            Surface(
-                color = BluePrimary.copy(alpha = 0.1f),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text("3 locais", color = BluePrimary, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), fontWeight = FontWeight.Medium)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            // Exemplo de iteração. Em produção, você passará a lista de objetos recuperada da API.
-            items(3) { index ->
-                val isOpen = index != 2
-                StoreCard(
-                    name = if (index == 0) "JP Águas e Gás" else "Gás Express Quixadá",
-                    isOpen = isOpen,
-                    deliveryTime = if (index == 0) "~15 min" else "~25 min",
-                    distance = if (index == 0) "1.2km" else "2.5km",
-                    rating = if (index == 0) "4.8" else "4.5"
-                )
-            }
+            Text(
+                "3 locais",
+                color = BluePrimary,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
@@ -265,5 +287,51 @@ fun ProductChip(type: String, price: String) {
             Spacer(modifier = Modifier.width(8.dp))
             Text(price, fontSize = 12.sp, color = BluePrimary, fontWeight = FontWeight.Bold)
         }
+    }
+}
+
+@Composable
+fun VerticalScrollbar(
+    listState: LazyListState,
+    modifier: Modifier = Modifier
+) {
+    val layoutInfo = listState.layoutInfo
+    val totalItemsCount = layoutInfo.totalItemsCount
+    val visibleItemsInfo = layoutInfo.visibleItemsInfo
+
+    if (totalItemsCount == 0 || visibleItemsInfo.isEmpty()) return
+
+    val viewportHeight = layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset
+    val avgItemHeight = visibleItemsInfo.sumOf { it.size } / visibleItemsInfo.size
+    val estimatedTotalHeight = avgItemHeight * totalItemsCount
+
+    if (estimatedTotalHeight <= viewportHeight) return
+
+    val thumbFraction = (viewportHeight.toFloat() / estimatedTotalHeight).coerceIn(0.08f, 1f)
+
+    val firstItem = visibleItemsInfo.first()
+    val scrolledPx = firstItem.index * avgItemHeight - firstItem.offset
+    val scrollFraction = (scrolledPx.toFloat() / (estimatedTotalHeight - viewportHeight)).coerceIn(0f, 1f)
+
+    Canvas(modifier = modifier.width(6.dp)) {
+        val trackHeight = size.height
+        val thumbHeight = (trackHeight * thumbFraction).coerceAtLeast(40.dp.toPx())
+        val availableTrack = trackHeight - thumbHeight
+        val thumbTop = availableTrack * scrollFraction
+
+        // Trilho (track)
+        drawRoundRect(
+            color = Color.Gray.copy(alpha = 0.15f),
+            size = Size(size.width, trackHeight),
+            cornerRadius = CornerRadius(size.width / 2)
+        )
+
+        // Indicador (thumb)
+        drawRoundRect(
+            color = BluePrimary.copy(alpha = 0.6f),
+            topLeft = Offset(0f, thumbTop),
+            size = Size(size.width, thumbHeight),
+            cornerRadius = CornerRadius(size.width / 2)
+        )
     }
 }
