@@ -1,6 +1,11 @@
 package com.levi.qxdapp.presentation.client.home
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -77,7 +82,7 @@ fun HeaderSection() {
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        "Centro, Quixadá - C",
+                        "Centro, Quixadá - Ce",
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
@@ -86,7 +91,179 @@ fun HeaderSection() {
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        //
+        // Barra de Pesquisa
+        OutlinedTextField(
+            value = "",
+            onValueChange = {},
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White, RoundedCornerShape(24.dp)),
+            placeholder = { Text("Buscar fornecedor ou produto...", color = Color.Gray) },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray) },
+            shape = RoundedCornerShape(24.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent
+            ),
+            singleLine = true
+        )
+        Spacer(modifier = Modifier.height(16.dp))
 
+
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(listOf("Todos", "Água", "Gás", "Abertos agora")) { filter ->
+                FilterChip(
+                    selected = filter == "Todos",
+                    onClick = { },
+                    label = { Text(filter, color = if (filter == "Todos") BluePrimary else Color.White) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        containerColor = if (filter == "Todos") Color.White else Color.Transparent,
+                        selectedContainerColor = Color.White
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = filter == "Todos",
+                        borderColor = Color.White
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MapPlaceholder() {
+    // Espaço reservado para o Google Maps
+    // Dica: Substitua este Box pelo GoogleMap do pacote com.google.maps.android:maps-compose
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .background(Color(0xFFE0E0E0)),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("Mapa (Google Maps API)", color = Color.DarkGray, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+fun StoreListSection() {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Locais de Venda", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextDark)
+            Surface(
+                color = BluePrimary.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("3 locais", color = BluePrimary, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), fontWeight = FontWeight.Medium)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            // Exemplo de iteração. Em produção, você passará a lista de objetos recuperada da API.
+            items(3) { index ->
+                val isOpen = index != 2
+                StoreCard(
+                    name = if (index == 0) "JP Águas e Gás" else "Gás Express Quixadá",
+                    isOpen = isOpen,
+                    deliveryTime = if (index == 0) "~15 min" else "~25 min",
+                    distance = if (index == 0) "1.2km" else "2.5km",
+                    rating = if (index == 0) "4.8" else "4.5"
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun StoreCard(name: String, isOpen: Boolean, deliveryTime: String, distance: String, rating: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .background(Color.Gray) // Substituir pelo AsyncImage (Coil) carregando as fotos do estabelecimento
+            ) {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(12.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(modifier = Modifier.size(40.dp).clip(RoundedCornerShape(8.dp)).background(Color.White))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(name, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    }
+
+                    Surface(
+                        color = if (isOpen) GreenOpen else RedClosed,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = if (isOpen) "• ABERTO" else "FECHADO",
+                            color = Color.White,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+            }
+
+            // Informações (Tempo, Distância, Avaliação)
+            Column(modifier = Modifier.padding(12.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(deliveryTime, fontSize = 12.sp, color = Color.Gray)
+                    Text(distance, fontSize = 12.sp, color = Color.Gray)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(rating, fontSize = 12.sp, color = Color.Gray)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Produtos
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    ProductChip("Água", "R$ 12.00")
+                    ProductChip("Gás", "R$ 115.00")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProductChip(type: String, price: String) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, Color(0xFFEEEEEE)),
+        color = Color.White
+    ) {
+        Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
+            Text(type, fontSize = 12.sp, color = Color.DarkGray)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(price, fontSize = 12.sp, color = BluePrimary, fontWeight = FontWeight.Bold)
+        }
     }
 }
