@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -67,6 +68,16 @@ data class Order(
 // --- Dados de exemplo (substituir por dados reais do Firebase/API) ---
 
 fun getSampleOrders(): List<Order> = listOf(
+    Order(
+        supplierName = "JP Águas e Gás",
+        supplierInitials = "JP",
+        date = "Hoje 15:35",
+        status = OrderStatus.EM_ANDAMENTO,
+        items = listOf(
+            OrderItem(quantity = 1, description = "Água 20L - Garrafão")
+        ),
+        total = "R$ 13,00"
+    ),
     Order(
         supplierName = "Depósito Água Viva",
         supplierInitials = "DA",
@@ -135,7 +146,7 @@ fun OrdersView() {
             item { Spacer(modifier = Modifier.height(24.dp)) }
         }
 
-        // Scrollbar vertical à direita (exatamente igual ao da HomeView)
+
         VerticalScrollbar(
             listState = listState,
             modifier = Modifier
@@ -451,9 +462,42 @@ fun OrderCard(
                     }
                 }
 
+                if (order.status == OrderStatus.EM_ANDAMENTO) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Schedule,
+                            contentDescription = "Em andamento",
+                            tint = GreenDelivered,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "A caminho",
+                            color = GreenDelivered,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        LinearProgressIndicator(
+                            progress = 0.6f,
+                            color = GreenDelivered,
+                            trackColor = GreenDelivered.copy(alpha = 0.15f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(6.dp)
+                                .clip(RoundedCornerShape(50))
+                        )
+                    }
+                }
+
                 Spacer(modifier = Modifier.width(8.dp))
 
-                // Seta de navegação
+
                 Box(
                     modifier = Modifier
                         .size(36.dp)
@@ -475,7 +519,7 @@ fun OrderCard(
     }
 }
 
-// --- Badge de status do pedido ---
+
 
 @Composable
 fun OrderStatusBadge(status: OrderStatus) {
