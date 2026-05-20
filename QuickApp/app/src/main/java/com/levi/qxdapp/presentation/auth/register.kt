@@ -19,12 +19,11 @@ import androidx.compose.ui.unit.sp
 import com.levi.qxdapp.R
 
 @Composable
-fun LoginScreen(
+fun RegisterScreen(
     modifier: Modifier = Modifier,
-    onLoginClick: () -> Unit = {},
-    onForgotPasswordClick: () -> Unit = {},
-    onRegisterClick: () -> Unit = {}
+    onLoginClick: () -> Unit = {}
 ) {
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -36,7 +35,7 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
+        // Icons container
         Row(
             modifier = Modifier
                 .clip(RoundedCornerShape(50.dp))
@@ -59,7 +58,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-
+        // Title
         Text(
             text = "QuickQXD",
             fontSize = 28.sp,
@@ -69,7 +68,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-
+        // Subtitle
         Text(
             text = "Água e gás na sua porta, rápido.",
             fontSize = 14.sp,
@@ -77,6 +76,31 @@ fun LoginScreen(
         )
 
         Spacer(modifier = Modifier.height(32.dp))
+
+        // Name Field
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Nome completo",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF333333)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                placeholder = { Text("Digite seu nome", color = Color(0xFFAAAAAA)) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = Color(0xFFE0E0E0),
+                    focusedBorderColor = Color(0xFF1565C0)
+                ),
+                singleLine = true
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Email Field
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -129,9 +153,9 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Login Button
+        // Register Button
         Button(
-            onClick = { onLoginClick() },
+            onClick = { /* Handle registration */ },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -139,29 +163,18 @@ fun LoginScreen(
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))
         ) {
             Text(
-                text = "Entrar",
+                text = "Cadastrar",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Forgot password
+        // Already have account
         Text(
-            text = "Esqueci minha senha",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color(0xFF1565C0),
-            modifier = Modifier.clickable { onForgotPasswordClick() }
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Don't have account
-        Text(
-            text = "Não tem uma conta?",
+            text = "Já tem uma conta?",
             fontSize = 14.sp,
             color = Color(0xFF666666)
         )
@@ -169,11 +182,11 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = "Criar conta",
+            text = "Fazer login",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF1565C0),
-            modifier = Modifier.clickable { onRegisterClick() }
+            modifier = Modifier.clickable { onLoginClick() }
         )
     }
 }

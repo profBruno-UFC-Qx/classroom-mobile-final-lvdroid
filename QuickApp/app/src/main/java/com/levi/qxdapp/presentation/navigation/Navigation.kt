@@ -4,9 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.Assignment
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,18 +22,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.levi.qxdapp.presentation.client.home.HomeView
+import com.levi.qxdapp.presentation.client.order.OrdersView
 
-// Cores do tema
+
 val BluePrimary = Color(0xFF1964C3)
 val GrayUnselected = Color(0xFF8A8F9E)
 
-// Rotas do bottom navigation
+
 sealed class BottomNavRoute(
     val route: String,
     val title: String,
     val icon: ImageVector
 ) {
-    object Home : BottomNavRoute("nav_home", "Início", Icons.Outlined.Home)
+    object Home : BottomNavRoute("nav_home", "Mapa", Icons.Outlined.Map)
     object Orders : BottomNavRoute("nav_orders", "Pedidos", Icons.Outlined.Assignment)
     object Profile : BottomNavRoute("nav_profile", "Perfil", Icons.Outlined.Person)
 }
@@ -70,7 +70,7 @@ fun MainScreen() {
                         selected = currentRoute == item.route,
                         onClick = {
                             navController.navigate(item.route) {
-                                // Evita empilhar múltiplas cópias da mesma tela
+
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
@@ -99,7 +99,7 @@ fun MainScreen() {
                 HomeView()
             }
             composable(BottomNavRoute.Orders.route) {
-                PlaceholderScreen(title = "Pedidos", subtitle = "Em breve: histórico de pedidos")
+                OrdersView()
             }
             composable(BottomNavRoute.Profile.route) {
                 PlaceholderScreen(title = "Perfil", subtitle = "Em breve: configurações da conta")
