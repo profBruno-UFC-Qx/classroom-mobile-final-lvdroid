@@ -1,5 +1,7 @@
 package com.levi.qxdapp.presentation.client.order
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,6 +18,9 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Schedule
@@ -28,13 +33,15 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.levi.qxdapp.presentation.client.home.VerticalScrollbar
 
-// Cores do tema (reutilizando as mesmas da HomeView)
+
 private val BluePrimary = Color(0xFF1964C3)
 private val BackgroundGray = Color(0xFFF5F6FA)
 private val TextDark = Color(0xFF1A1A1A)
@@ -107,6 +114,7 @@ fun OrdersView() {
     val listState = rememberLazyListState()
     var selectedTab by remember { mutableIntStateOf(0) }
     val allOrders = remember { mutableStateListOf(*getSampleOrders().toTypedArray()) }
+    var showHelpDialog by remember { mutableStateOf(false) }
 
     val filteredOrders = when (selectedTab) {
         1 -> allOrders.filter { it.status == OrderStatus.EM_ANDAMENTO }
@@ -126,7 +134,8 @@ fun OrdersView() {
             item {
                 OrdersHeaderSection(
                     selectedTab = selectedTab,
-                    onTabSelected = { selectedTab = it }
+                    onTabSelected = { selectedTab = it },
+                    onHelpClicked = { showHelpDialog = true }
                 )
             }
 
@@ -142,7 +151,7 @@ fun OrdersView() {
                 }
             }
 
-            // Espaço inferior para não ficar colado à bottom bar
+
             item { Spacer(modifier = Modifier.height(24.dp)) }
         }
 
@@ -155,14 +164,20 @@ fun OrdersView() {
                 .padding(end = 4.dp, top = 4.dp, bottom = 4.dp)
         )
     }
+
+    // Modal de Ajuda e Suporte (WhatsApp e Ligação)
+    if (showHelpDialog) {
+        AjudaSuporteDialog(onDismiss = { showHelpDialog = false })
+    }
 }
 
-// --- Header azul com título e abas ---
+
 
 @Composable
 fun OrdersHeaderSection(
     selectedTab: Int,
-    onTabSelected: (Int) -> Unit
+    onTabSelected: (Int) -> Unit,
+    onHelpClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -189,7 +204,7 @@ fun OrdersHeaderSection(
             Surface(
                 shape = RoundedCornerShape(50),
                 color = Color.White.copy(alpha = 0.20f),
-                modifier = Modifier.clickable { /* TODO: ação de ajuda */ }
+                modifier = Modifier.clickable { onHelpClicked() }
             ) {
                 Text(
                     text = "Precisa de ajuda?",
@@ -283,7 +298,7 @@ fun OrderCard(
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                // Nome e data
+
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = order.supplierName,
@@ -298,7 +313,7 @@ fun OrderCard(
                     )
                 }
 
-                // Badge de status
+
                 OrderStatusBadge(status = order.status)
 
 
@@ -551,4 +566,193 @@ fun OrderStatusBadge(status: OrderStatus) {
         }
     }
 }
+
+// --- Modal de Ajuda e Suporte ---
+
+@Composable
+fun AjudaSuporteDialog(onDismiss: () -> Unit) {
+    val context = LocalContext.current
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(28.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+            ) {
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Ajuda e Suporte",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF111827)
+                    )
+                    IconButton(
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(Color(0xFFF3F4F6), CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Fechar",
+                            tint = Color(0xFF4B5563),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = "Como você prefere falar com a distribuidora?",
+                    fontSize = 14.sp,
+                    color = Color(0xFF6B7280)
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Opção 1: WhatsApp
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFF25D366).copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .background(Color(0xFF25D366).copy(alpha = 0.02f), RoundedCornerShape(16.dp))
+                        .clickable {
+                            val intent = Intent(Intent.ACTION_VIEW).apply {
+                                data = Uri.parse("https://api.whatsapp.com/send?phone=5588999999999")
+                            }
+                            try {
+                                context.startActivity(intent)
+                            } catch (e: Exception) {
+                                // Caso o whatsapp ou navegador falhe
+                            }
+                        }
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .background(Color(0xFF25D366), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Message,
+                            contentDescription = "WhatsApp",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column {
+                        Text(
+                            text = "WhatsApp",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF111827)
+                        )
+                        Text(
+                            text = "Atendimento rápido por mensagem",
+                            fontSize = 12.sp,
+                            color = Color(0xFF6B7280)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Opção 2: Ligar para Distribuidora
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFF1964C3).copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .background(Color(0xFF1964C3).copy(alpha = 0.02f), RoundedCornerShape(16.dp))
+                        .clickable {
+                            val intent = Intent(Intent.ACTION_DIAL).apply {
+                                data = Uri.parse("tel:88999999999")
+                            }
+                            context.startActivity(intent)
+                        }
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .background(Color(0xFF1964C3), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Call,
+                            contentDescription = "Ligar",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column {
+                        Text(
+                            text = "Ligar para Distribuidora",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF111827)
+                        )
+                        Text(
+                            text = "(88) 99999-9999",
+                            fontSize = 12.sp,
+                            color = Color(0xFF6B7280)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Botão Cancelar verde
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF2E7D32)
+                    )
+                ) {
+                    Text(
+                        text = "Cancelar",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+    }
+}
+
 
