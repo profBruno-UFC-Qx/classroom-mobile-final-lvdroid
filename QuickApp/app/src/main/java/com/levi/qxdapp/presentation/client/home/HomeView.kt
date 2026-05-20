@@ -1,13 +1,7 @@
 package com.levi.qxdapp.presentation.client.home
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,17 +12,19 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,80 +79,115 @@ fun HomeView() {
 
 @Composable
 fun HeaderSection() {
+    val corFundoTransparente = Color.White.copy(alpha = 0.15f)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(BluePrimary)
+            .background(
+                color = BluePrimary,
+                shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)
+            )
             .padding(16.dp)
     ) {
-        // Top Bar: Usuário e Localização
         Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+
             Box(
                 modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.2f)),
+                    .size(48.dp)
+                    .background(corFundoTransparente, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Text("JS", color = Color.White, fontWeight = FontWeight.Bold)
+                Text(text = "JS", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             }
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text("Localização atual", color = Color.White.copy(alpha = 0.7f), fontSize = 12.sp)
+
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp)
+            ) {
+                Text(
+                    text = "Localização atual",
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontSize = 12.sp
+                )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        Icons.Default.LocationOn,
-                        contentDescription = null,
+                        imageVector = Icons.Outlined.LocationOn,
+                        contentDescription = "Ícone Localização",
                         tint = Color.White,
                         modifier = Modifier.size(16.dp)
                     )
+                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        "Centro, Quixadá - Ce",
+                        text = "Centro, Quixadá - CE",
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
                     )
                 }
             }
+
+
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(corFundoTransparente, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Schedule,
+                    contentDescription = "Histórico",
+                    tint = Color.White
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .background(Color(0xFFFF3B30), CircleShape)
+                        .align(Alignment.TopEnd)
+                        .offset(x = (-2).dp, y = 2.dp)
+                )
+            }
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        // Barra de Pesquisa
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+
         OutlinedTextField(
             value = "",
             onValueChange = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White, RoundedCornerShape(24.dp)),
+            modifier = Modifier.fillMaxWidth(),
             placeholder = { Text("Buscar fornecedor ou produto...", color = Color.Gray) },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray) },
-            shape = RoundedCornerShape(24.dp),
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar", tint = Color.Gray) },
+            shape = RoundedCornerShape(50),
             colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
                 focusedBorderColor = Color.Transparent,
                 unfocusedBorderColor = Color.Transparent
             ),
             singleLine = true
         )
+
         Spacer(modifier = Modifier.height(16.dp))
 
 
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(listOf("Todos", "Água", "Gás", "Abertos agora")) { filter ->
-                FilterChip(
-                    selected = filter == "Todos",
-                    onClick = { },
-                    label = { Text(filter, color = if (filter == "Todos") BluePrimary else Color.White) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        containerColor = if (filter == "Todos") Color.White else Color.Transparent,
-                        selectedContainerColor = Color.White
-                    ),
-                    border = FilterChipDefaults.filterChipBorder(
-                        enabled = true,
-                        selected = filter == "Todos",
-                        borderColor = Color.White
-                    )
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val filtros = listOf("Todos", "Água", "Gás", "Abertos agora")
+            items(filtros) { filter ->
+                FilterChipCustom(
+                    text = filter,
+                    isSelected = filter == "Todos",
+                    colorPrimary = BluePrimary
                 )
             }
         }
@@ -164,9 +195,26 @@ fun HeaderSection() {
 }
 
 @Composable
+fun FilterChipCustom(text: String, isSelected: Boolean, colorPrimary: Color) {
+    Box(
+        modifier = Modifier
+            .background(
+                color = if (isSelected) Color.White else Color.White.copy(alpha = 0.15f),
+                shape = RoundedCornerShape(50)
+            )
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = text,
+            color = if (isSelected) colorPrimary else Color.White,
+            fontSize = 14.sp,
+            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
+        )
+    }
+}
+
+@Composable
 fun MapPlaceholder() {
-    // Espaço reservado para o Google Maps
-    // Dica: Substitua este Box pelo GoogleMap do pacote com.google.maps.android:maps-compose
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -212,12 +260,11 @@ fun StoreCard(name: String, isOpen: Boolean, deliveryTime: String, distance: Str
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
-                    .background(Color.Gray) // Substituir pelo AsyncImage (Coil) carregando as fotos do estabelecimento
+                    .background(Color.Gray)
             ) {
                 Row(
                     modifier = Modifier
@@ -248,7 +295,7 @@ fun StoreCard(name: String, isOpen: Boolean, deliveryTime: String, distance: Str
                 }
             }
 
-            // Informações (Tempo, Distância, Avaliação)
+
             Column(modifier = Modifier.padding(12.dp)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -265,7 +312,7 @@ fun StoreCard(name: String, isOpen: Boolean, deliveryTime: String, distance: Str
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Produtos
+
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     ProductChip("Água", "R$ 12.00")
                     ProductChip("Gás", "R$ 115.00")
@@ -319,14 +366,11 @@ fun VerticalScrollbar(
         val availableTrack = trackHeight - thumbHeight
         val thumbTop = availableTrack * scrollFraction
 
-        // Trilho (track)
         drawRoundRect(
             color = Color.Gray.copy(alpha = 0.15f),
             size = Size(size.width, trackHeight),
             cornerRadius = CornerRadius(size.width / 2)
         )
-
-        // Indicador (thumb)
         drawRoundRect(
             color = BluePrimary.copy(alpha = 0.6f),
             topLeft = Offset(0f, thumbTop),
