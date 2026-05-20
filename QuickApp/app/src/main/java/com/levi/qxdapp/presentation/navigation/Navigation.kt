@@ -7,7 +7,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Assignment
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -36,14 +35,12 @@ sealed class BottomNavRoute(
     val icon: ImageVector
 ) {
     object Home : BottomNavRoute("nav_home", "Início", Icons.Outlined.Home)
-    object Map : BottomNavRoute("nav_map", "Mapa", Icons.Outlined.Map)
     object Orders : BottomNavRoute("nav_orders", "Pedidos", Icons.Outlined.Assignment)
     object Profile : BottomNavRoute("nav_profile", "Perfil", Icons.Outlined.Person)
 }
 
 val bottomNavItems = listOf(
     BottomNavRoute.Home,
-    BottomNavRoute.Map,
     BottomNavRoute.Orders,
     BottomNavRoute.Profile
 )
@@ -101,9 +98,6 @@ fun MainScreen() {
             composable(BottomNavRoute.Home.route) {
                 HomeView()
             }
-            composable(BottomNavRoute.Map.route) {
-                PlaceholderScreen(title = "Mapa", subtitle = "Em breve: localização dos fornecedores")
-            }
             composable(BottomNavRoute.Orders.route) {
                 PlaceholderScreen(title = "Pedidos", subtitle = "Em breve: histórico de pedidos")
             }
@@ -114,9 +108,7 @@ fun MainScreen() {
     }
 }
 
-/**
- * Tela temporária para abas ainda não implementadas.
- */
+/**Tela temporária para abas ainda não implementadas.**/
 @Composable
 fun PlaceholderScreen(title: String, subtitle: String) {
     Box(
