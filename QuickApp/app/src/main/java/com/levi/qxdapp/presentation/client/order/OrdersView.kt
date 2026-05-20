@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.levi.qxdapp.presentation.client.home.VerticalScrollbar
 
 // Cores do tema (reutilizando as mesmas da HomeView)
 private val BluePrimary = Color(0xFF1964C3)
@@ -134,8 +135,8 @@ fun OrdersView() {
             item { Spacer(modifier = Modifier.height(24.dp)) }
         }
 
-        // Scrollbar vertical à direita
-        OrdersVerticalScrollbar(
+        // Scrollbar vertical à direita (exatamente igual ao da HomeView)
+        VerticalScrollbar(
             listState = listState,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
@@ -507,47 +508,3 @@ fun OrderStatusBadge(status: OrderStatus) {
     }
 }
 
-// --- Scrollbar vertical ---
-
-@Composable
-fun OrdersVerticalScrollbar(
-    listState: LazyListState,
-    modifier: Modifier = Modifier
-) {
-    val layoutInfo = listState.layoutInfo
-    val totalItemsCount = layoutInfo.totalItemsCount
-    val visibleItemsInfo = layoutInfo.visibleItemsInfo
-
-    if (totalItemsCount == 0 || visibleItemsInfo.isEmpty()) return
-
-    val viewportHeight = layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset
-    val avgItemHeight = visibleItemsInfo.sumOf { it.size } / visibleItemsInfo.size
-    val estimatedTotalHeight = avgItemHeight * totalItemsCount
-
-    if (estimatedTotalHeight <= viewportHeight) return
-
-    val thumbFraction = (viewportHeight.toFloat() / estimatedTotalHeight).coerceIn(0.08f, 1f)
-
-    val firstItem = visibleItemsInfo.first()
-    val scrolledPx = firstItem.index * avgItemHeight - firstItem.offset
-    val scrollFraction = (scrolledPx.toFloat() / (estimatedTotalHeight - viewportHeight)).coerceIn(0f, 1f)
-
-    Canvas(modifier = modifier.width(6.dp)) {
-        val trackHeight = size.height
-        val thumbHeight = (trackHeight * thumbFraction).coerceAtLeast(40.dp.toPx())
-        val availableTrack = trackHeight - thumbHeight
-        val thumbTop = availableTrack * scrollFraction
-
-        drawRoundRect(
-            color = Color.Gray.copy(alpha = 0.15f),
-            size = Size(size.width, trackHeight),
-            cornerRadius = CornerRadius(size.width / 2)
-        )
-        drawRoundRect(
-            color = BluePrimary.copy(alpha = 0.6f),
-            topLeft = Offset(0f, thumbTop),
-            size = Size(size.width, thumbHeight),
-            cornerRadius = CornerRadius(size.width / 2)
-        )
-    }
-}
