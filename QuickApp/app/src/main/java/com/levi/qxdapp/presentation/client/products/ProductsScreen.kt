@@ -37,6 +37,7 @@ data class ProductInfo(
     val distance: String,
     val rating: String,
     val price: Double,
+    val priceCard: Double? = null,
     val imageResId: Int,
     val isGas: Boolean
 )
@@ -60,6 +61,7 @@ val productsData = listOf(
         distance = "1.2km",
         rating = "4.8",
         price = 115.00,
+        priceCard = 130.00,
         imageResId = R.drawable.gas,
         isGas = true
     ),
@@ -80,7 +82,30 @@ val productsData = listOf(
         distance = "2.5km",
         rating = "4.5",
         price = 115.00,
+        priceCard = 130.00,
         imageResId = R.drawable.gas,
+        isGas = true
+    ),
+    ProductInfo(
+        id = 5,
+        name = "Gás P45",
+        subtitle = "Gás Express Quixadá",
+        distance = "2.5km",
+        rating = "4.5",
+        price = 340.00,
+        priceCard = 420.00,
+        imageResId = R.drawable.p45,
+        isGas = true
+    ),
+    ProductInfo(
+        id = 6,
+        name = "Gás P45",
+        subtitle = "Quixadá Gás - Liquigás",
+        distance = "1.8km",
+        rating = "4.7",
+        price = 340.00,
+        priceCard = 420.00,
+        imageResId = R.drawable.p45,
         isGas = true
     )
 )
@@ -371,32 +396,43 @@ private fun ProductDetailsDialog(product: ProductInfo, onDismiss: () -> Unit) {
                         ) {
                             Text("PIX (com desconto)", fontWeight = FontWeight.Medium)
                             Text(
-                                "R$ 115,00",
+                                text = "R$ " + String.format("%.2f", product.price).replace(".", ","),
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF2E7D32)
                             )
                         }
                     }
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0)),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                    if (product.priceCard != null) {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0)),
+                            shape = RoundedCornerShape(8.dp)
                         ) {
-                            Text("Cartão de Crédito", fontWeight = FontWeight.Medium)
-                            Text(
-                                "R$ 130,00",
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFFE65100)
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text("Cartão de Crédito", fontWeight = FontWeight.Medium)
+                                Text(
+                                    text = "R$ " + String.format("%.2f", product.priceCard).replace(".", ","),
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFFE65100)
+                                )
+                            }
                         }
                     }
+                    val gasDescription = if (product.name.contains("P45")) {
+                        "Gás industrial P45. Preço varia de R$ " + 
+                        String.format("%.2f", product.price).replace(".", ",") + " a R$ " + 
+                        String.format("%.2f", product.priceCard ?: 0.0).replace(".", ",") + " dependendo da forma de pagamento."
+                    } else {
+                        "Gás de cozinha 13kg. Preço varia de R$ " + 
+                        String.format("%.2f", product.price).replace(".", ",") + " a R$ " + 
+                        String.format("%.2f", product.priceCard ?: 0.0).replace(".", ",") + " dependendo da forma de pagamento."
+                    }
                     Text(
-                        text = "Gás de cozinha 13kg. Preço varia de R$ 115,00 a R$ 130,00 dependendo da forma de pagamento.",
+                        text = gasDescription,
                         fontSize = 13.sp,
                         color = Color.Gray
                     )
