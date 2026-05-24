@@ -23,6 +23,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.levi.qxdapp.presentation.client.home.HomeView
 import com.levi.qxdapp.presentation.client.order.OrdersView
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 
 val BluePrimary = Color(0xFF1964C3)
@@ -96,7 +98,9 @@ fun MainScreen() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavRoute.Home.route) {
-                HomeView(onSearchClick = { navController.navigate("search_products") })
+                HomeView(onSearchClick = { filter -> 
+                    navController.navigate("search_products/$filter")
+                })
             }
             composable(BottomNavRoute.Orders.route) {
                 OrdersView()
@@ -106,6 +110,17 @@ fun MainScreen() {
             }
             composable("search_products") {
                 com.levi.qxdapp.presentation.client.products.ProductsScreen(
+                    initialFilter = "Todos",
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+            composable(
+                route = "search_products/{filter}",
+                arguments = listOf(navArgument("filter") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val filter = backStackEntry.arguments?.getString("filter") ?: "Todos"
+                com.levi.qxdapp.presentation.client.products.ProductsScreen(
+                    initialFilter = filter,
                     onBackClick = { navController.popBackStack() }
                 )
             }

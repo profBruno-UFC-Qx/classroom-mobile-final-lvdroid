@@ -38,7 +38,7 @@ val GreenOpen = Color(0xFF34A853)
 val RedClosed = Color(0xFFEA4335)
 
 @Composable
-fun HomeView(onSearchClick: () -> Unit = {}) {
+fun HomeView(onSearchClick: (String) -> Unit = {}) {
     val listState = rememberLazyListState()
 
     Box(
@@ -79,7 +79,7 @@ fun HomeView(onSearchClick: () -> Unit = {}) {
 }
 
 @Composable
-fun HeaderSection(onSearchClick: () -> Unit = {}) {
+fun HeaderSection(onSearchClick: (String) -> Unit = {}) {
     val corFundoTransparente = Color.White.copy(alpha = 0.15f)
 
     Column(
@@ -156,7 +156,7 @@ fun HeaderSection(onSearchClick: () -> Unit = {}) {
             }
         }
         Spacer(modifier = Modifier.height(20.dp))
-        Box(modifier = Modifier.fillMaxWidth().clickable { onSearchClick() }) {
+        Box(modifier = Modifier.fillMaxWidth().clickable { onSearchClick("Todos") }) {
             OutlinedTextField(
                 value = "",
                 onValueChange = {},
@@ -190,7 +190,12 @@ fun HeaderSection(onSearchClick: () -> Unit = {}) {
                 FilterChipCustom(
                     text = filter,
                     isSelected = filter == "Todos",
-                    colorPrimary = BluePrimary
+                    colorPrimary = BluePrimary,
+                    onClick = {
+                        if (filter == "Todos" || filter == "Água" || filter == "Gás") {
+                            onSearchClick(filter)
+                        }
+                    }
                 )
             }
         }
@@ -198,9 +203,10 @@ fun HeaderSection(onSearchClick: () -> Unit = {}) {
 }
 
 @Composable
-fun FilterChipCustom(text: String, isSelected: Boolean, colorPrimary: Color) {
+fun FilterChipCustom(text: String, isSelected: Boolean, colorPrimary: Color, onClick: () -> Unit = {}) {
     Box(
         modifier = Modifier
+            .clickable { onClick() }
             .background(
                 color = if (isSelected) Color.White else Color.White.copy(alpha = 0.15f),
                 shape = RoundedCornerShape(50)

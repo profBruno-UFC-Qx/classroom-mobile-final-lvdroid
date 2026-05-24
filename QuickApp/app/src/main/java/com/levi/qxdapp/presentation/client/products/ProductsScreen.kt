@@ -87,8 +87,8 @@ val productsData = listOf(
 
 
 @Composable
-fun ProductsScreen(onBackClick: () -> Unit = {}) {
-    var selectedFilter by remember { mutableStateOf("Todos") }
+fun ProductsScreen(initialFilter: String = "Todos", onBackClick: () -> Unit = {}) {
+    var selectedFilter by remember { mutableStateOf(initialFilter) }
     var selectedProduct by remember { mutableStateOf<ProductInfo?>(null) }
 
     val filteredProducts = productsData.filter {
