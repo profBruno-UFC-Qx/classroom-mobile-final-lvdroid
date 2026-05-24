@@ -107,7 +107,8 @@ fun MainScreen() {
             }
             composable(BottomNavRoute.Profile.route) {
                 com.levi.qxdapp.presentation.client.profile.ClientProfileScreen(
-                    onLogoutClick = { /* TODO: navigate to login */ }
+                    onLogoutClick = { /* TODO: navigate to login */ },
+                    onSupplierClick = { navController.navigate("supplier_profile") }
                 )
             }
             composable("search_products") {
