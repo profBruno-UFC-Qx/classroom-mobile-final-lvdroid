@@ -3,6 +3,7 @@ package com.levi.qxdapp.presentation.client.home
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -37,7 +38,7 @@ val GreenOpen = Color(0xFF34A853)
 val RedClosed = Color(0xFFEA4335)
 
 @Composable
-fun HomeView() {
+fun HomeView(onSearchClick: () -> Unit = {}) {
     val listState = rememberLazyListState()
 
     Box(
@@ -49,7 +50,7 @@ fun HomeView() {
             state = listState,
             modifier = Modifier.fillMaxSize()
         ) {
-            item { HeaderSection() }
+            item { HeaderSection(onSearchClick = onSearchClick) }
             item { MapPlaceholder() }
             item { StoreListHeader() }
             items(3) { index ->
@@ -78,7 +79,7 @@ fun HomeView() {
 }
 
 @Composable
-fun HeaderSection() {
+fun HeaderSection(onSearchClick: () -> Unit = {}) {
     val corFundoTransparente = Color.White.copy(alpha = 0.15f)
 
     Column(
@@ -155,21 +156,27 @@ fun HeaderSection() {
             }
         }
         Spacer(modifier = Modifier.height(20.dp))
-        OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Buscar fornecedor ou produto...", color = Color.Gray) },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar", tint = Color.Gray) },
-            shape = RoundedCornerShape(50),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent
-            ),
-            singleLine = true
-        )
+        Box(modifier = Modifier.fillMaxWidth().clickable { onSearchClick() }) {
+            OutlinedTextField(
+                value = "",
+                onValueChange = {},
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Buscar fornecedor ou produto...", color = Color.Gray) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar", tint = Color.Gray) },
+                shape = RoundedCornerShape(50),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    disabledContainerColor = Color.White,
+                    disabledBorderColor = Color.Transparent,
+                    disabledTextColor = Color.Black
+                ),
+                singleLine = true,
+                enabled = false
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 

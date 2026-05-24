@@ -96,13 +96,18 @@ fun MainScreen() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavRoute.Home.route) {
-                HomeView()
+                HomeView(onSearchClick = { navController.navigate("search_products") })
             }
             composable(BottomNavRoute.Orders.route) {
                 OrdersView()
             }
             composable(BottomNavRoute.Profile.route) {
                 PlaceholderScreen(title = "Perfil", subtitle = "Em breve: configurações da conta")
+            }
+            composable("search_products") {
+                com.levi.qxdapp.presentation.client.products.ProductsScreen(
+                    onBackClick = { navController.popBackStack() }
+                )
             }
         }
     }
