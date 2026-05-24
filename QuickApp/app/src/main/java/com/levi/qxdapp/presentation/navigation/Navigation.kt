@@ -106,7 +106,9 @@ fun MainScreen() {
                 OrdersView()
             }
             composable(BottomNavRoute.Profile.route) {
-                PlaceholderScreen(title = "Perfil", subtitle = "Em breve: configurações da conta")
+                com.levi.qxdapp.presentation.client.profile.ClientProfileScreen(
+                    onLogoutClick = { /* TODO: navigate to login */ }
+                )
             }
             composable("search_products") {
                 com.levi.qxdapp.presentation.client.products.ProductsScreen(
@@ -124,11 +126,16 @@ fun MainScreen() {
                     onBackClick = { navController.popBackStack() }
                 )
             }
+            composable("supplier_profile") {
+                com.levi.qxdapp.presentation.supplier.profile.SupplierProfileScreen(
+                    onLogoutClick = { /* TODO: navigate to login */ }
+                )
+            }
         }
     }
 }
 
-/**Tela temporária para abas ainda não implementadas.**/
+
 @Composable
 fun PlaceholderScreen(title: String, subtitle: String) {
     Box(
