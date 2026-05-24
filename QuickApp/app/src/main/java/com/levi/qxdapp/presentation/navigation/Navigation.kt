@@ -129,6 +129,7 @@ fun MainScreen() {
             }
             composable("supplier_profile") {
                 com.levi.qxdapp.presentation.supplier.profile.SupplierProfileScreen(
+                    onBackClick = { navController.popBackStack() },
                     onLogoutClick = { /* TODO: navigate to login */ }
                 )
             }
