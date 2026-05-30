@@ -5,16 +5,12 @@ plugins {
 
 android {
     namespace = "com.levi.qxdapp"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.levi.qxdapp"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -50,7 +46,12 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
+    
+    // Google Maps - Nomes corrigidos de acordo com o catálogo (libs.versions.toml)
     implementation(libs.maps.compose)
+    implementation(libs.play.maps)
+    implementation(libs.play.location)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
