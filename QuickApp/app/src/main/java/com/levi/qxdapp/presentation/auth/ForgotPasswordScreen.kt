@@ -32,7 +32,7 @@ fun ForgotPasswordScreen(
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Top bar area with back button
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -75,7 +75,7 @@ fun ForgotPasswordScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Email Field
+
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "E-mail",
@@ -102,7 +102,7 @@ fun ForgotPasswordScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // New Password Field
+
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Nova Senha",
@@ -130,7 +130,7 @@ fun ForgotPasswordScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Confirm Password Field
+
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Confirmar Nova Senha",

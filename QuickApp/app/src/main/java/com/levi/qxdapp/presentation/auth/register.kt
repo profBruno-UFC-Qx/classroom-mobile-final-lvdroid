@@ -16,13 +16,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
+import com.levi.qxdapp.data.local.UserProfileManager
 import com.levi.qxdapp.R
 
 @Composable
 fun RegisterScreen(
     modifier: Modifier = Modifier,
+    onRegisterSuccess: (String) -> Unit = {},
     onLoginClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -104,7 +109,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Email Field
+
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "E-mail",
@@ -131,7 +136,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Password Field
+
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Senha",
@@ -159,9 +164,20 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Register Button
         Button(
-            onClick = { /* Handle registration */ },
+            onClick = {
+                if (name.isBlank() || email.isBlank() || password.isBlank()) {
+                    Toast.makeText(context, "Por favor, preencha todos os campos", Toast.LENGTH_SHORT).show()
+                } else if (!email.contains("@")) {
+                    Toast.makeText(context, "E-mail inválido", Toast.LENGTH_SHORT).show()
+                } else if (password.length < 4) {
+                    Toast.makeText(context, "A senha deve ter pelo menos 4 caracteres", Toast.LENGTH_SHORT).show()
+                } else {
+                    UserProfileManager.registerUser(context, name, email, password)
+                    Toast.makeText(context, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
+                    onRegisterSuccess(email)
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),

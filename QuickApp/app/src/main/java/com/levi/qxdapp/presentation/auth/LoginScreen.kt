@@ -16,6 +16,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
+import com.levi.qxdapp.data.local.UserProfileManager
 import com.levi.qxdapp.R
 
 @Composable
@@ -25,7 +28,8 @@ fun LoginScreen(
     onForgotPasswordClick: () -> Unit = {},
     onRegisterClick: () -> Unit = {}
 ) {
-    var email by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    var email by remember { mutableStateOf(UserProfileManager.getRegisteredEmail(context) ?: "") }
     var password by remember { mutableStateOf("") }
 
     Column(
@@ -133,9 +137,17 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Login Button
+
         Button(
-            onClick = { onLoginClick() },
+            onClick = {
+                if (email.isBlank() || password.isBlank()) {
+                    Toast.makeText(context, "Por favor, preencha todos os campos", Toast.LENGTH_SHORT).show()
+                } else if (UserProfileManager.authenticate(context, email, password)) {
+                    onLoginClick()
+                } else {
+                    Toast.makeText(context, "E-mail ou senha incorretos", Toast.LENGTH_SHORT).show()
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -152,7 +164,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Forgot password
+
         Text(
             text = "Esqueci minha senha",
             fontSize = 14.sp,

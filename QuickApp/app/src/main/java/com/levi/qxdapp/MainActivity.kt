@@ -57,6 +57,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("register") {
                             RegisterScreen(
+                                onRegisterSuccess = { email ->
+                                    navController.popBackStack()
+                                },
                                 onLoginClick = {
                                     navController.popBackStack()
                                 }
