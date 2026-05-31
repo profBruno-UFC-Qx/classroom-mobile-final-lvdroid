@@ -288,12 +288,12 @@ fun StoreCard(store: WaterGasStore, distance: String) {
                     }
 
                     Surface(
-                        color = if (store.isOpen) GreenOpen.copy(alpha = 0.15f) else RedClosed.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(8.dp)
+                        color = if (store.isOpen) GreenOpen else RedClosed,
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
-                            text = if (store.isOpen) "● ABERTO" else "● FECHADO",
-                            color = if (store.isOpen) GreenOpen else RedClosed,
+                            text = if (store.isOpen) "• ABERTO" else "• FECHADO",
+                            color = Color.White,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
