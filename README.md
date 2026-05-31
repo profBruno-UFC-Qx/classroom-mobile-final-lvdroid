@@ -1,6 +1,5 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/AR7CADm8)
 [![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=23200868)
-
 # :checkered_flag: QuickQXD
 
 O QuickQXD é um aplicativo mobile desenvolvido em Kotlin que tem como objetivo facilitar a comunicação entre moradores e fornecedores locais de água e gás na cidade de Quixadá. A plataforma permite que usuários realizem pedidos de forma rápida e organizada, enquanto os fornecedores recebem e gerenciam as solicitações de maneira simples e eficiente.
