@@ -7,7 +7,7 @@ O QuickQXD é um aplicativo mobile desenvolvido em Kotlin que tem como objetivo 
 
 O projeto busca promover inclusão digital, otimizar a prestação de serviços essenciais e fortalecer o comércio local por meio do uso da tecnologia.
 
-## :Esqueleto do prjeto Versão 1
+## :Esqueleto do projeto Versão 1
 https://docs.google.com/document/d/1N5txokniEYnw7_wP5hV6UZS7oxtBQtr44ExqIS4oGa0/edit?usp=sharing
 
 ## :technologist: Membros da equipe
