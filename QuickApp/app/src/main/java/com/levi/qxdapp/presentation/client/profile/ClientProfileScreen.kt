@@ -84,7 +84,7 @@ private val DividerColor = Color(0xFFEEEEEE)
 private val GrayLabel = Color(0xFF9E9E9E)
 
 @Composable
-fun ClientProfileScreen(onLogoutClick: () -> Unit = {}, onSupplierClick: () -> Unit = {}) {
+fun ClientProfileScreen(onLogoutClick: () -> Unit = {}) {
     val context = LocalContext.current
     var firstName by remember { mutableStateOf(UserProfileManager.getFirstName(context)) }
     var lastName by remember { mutableStateOf(UserProfileManager.getLastName(context)) }
@@ -373,15 +373,6 @@ fun ClientProfileScreen(onLogoutClick: () -> Unit = {}, onSupplierClick: () -> U
         MenuCard(
             onAddressesClick = { showAddressesDialog = true },
             onEditProfileClick = { showEditProfileDialog = true },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        SupplierButton(
-            onClick = onSupplierClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
@@ -685,31 +676,6 @@ private fun MenuRow(icon: ImageVector, label: String, onClick: () -> Unit) {
     }
 }
 
-@Composable
-private fun SupplierButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Button(
-        onClick = onClick,
-        modifier = modifier.height(52.dp),
-        shape = RoundedCornerShape(14.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = OrangeSupplier
-        )
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Store,
-            contentDescription = null,
-            tint = Color.White,
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(modifier = Modifier.width(10.dp))
-        Text(
-            text = "Área do Fornecedor",
-            color = Color.White,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 15.sp
-        )
-    }
-}
 
 @Composable
 private fun LogoutButton(onClick: () -> Unit, modifier: Modifier = Modifier) {

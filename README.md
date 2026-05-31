@@ -13,6 +13,10 @@ https://docs.google.com/document/d/1N5txokniEYnw7_wP5hV6UZS7oxtBQtr44ExqIS4oGa0/
 
  Abraão Levi  de Andrade P Vitoriano, 548324, SI
 
+## :file_folder: Esqueleto do desenvolvimento
+
+![Estrutura de pastas](quickapp_structure.svg)
+
 ## :bulb: Objetivo Geral
 Desenvolver e implementar o aplicativo mobile QuickQXD, com o propósito de facilitar o acesso da população aos serviços de compra de água e gás na cidade de Quixadá, promovendo inclusão digital, melhoria na comunicação entre clientes e fornecedores locais e maior eficiência na prestação de serviços essenciais.
 

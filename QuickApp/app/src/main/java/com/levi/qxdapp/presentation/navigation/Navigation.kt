@@ -118,8 +118,7 @@ fun MainScreen(onLogoutClick: () -> Unit = {}) {
             }
             composable(BottomNavRoute.Profile.route) {
                 com.levi.qxdapp.presentation.client.profile.ClientProfileScreen(
-                    onLogoutClick = onLogoutClick,
-                    onSupplierClick = { navController.navigate("supplier_profile") }
+                    onLogoutClick = onLogoutClick
                 )
             }
             composable("search_products") {
@@ -138,12 +137,7 @@ fun MainScreen(onLogoutClick: () -> Unit = {}) {
                     onBackClick = { navController.popBackStack() }
                 )
             }
-            composable("supplier_profile") {
-                com.levi.qxdapp.presentation.supplier.profile.SupplierProfileScreen(
-                    onBackClick = { navController.popBackStack() },
-                    onLogoutClick = onLogoutClick
-                )
-            }
+
         }
     }
 }
