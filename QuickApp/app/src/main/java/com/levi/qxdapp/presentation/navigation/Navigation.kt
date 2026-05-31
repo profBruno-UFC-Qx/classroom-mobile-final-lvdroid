@@ -27,8 +27,8 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
 
-val BluePrimary = Color(0xFF1964C3)
-val GrayUnselected = Color(0xFF8A8F9E)
+private val BluePrimary = Color(0xFF1964C3)
+private val GrayUnselected = Color(0xFF8A8F9E)
 
 
 sealed class BottomNavRoute(
