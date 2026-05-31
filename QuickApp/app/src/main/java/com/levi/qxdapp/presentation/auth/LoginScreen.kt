@@ -26,7 +26,8 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     onLoginClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
-    onRegisterClick: () -> Unit = {}
+    onRegisterClick: () -> Unit = {},
+    onSupplierClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     var email by remember { mutableStateOf(UserProfileManager.getRegisteredEmail(context) ?: "") }
@@ -190,6 +191,24 @@ fun LoginScreen(
             fontWeight = FontWeight.Bold,
             color = Color(0xFF1565C0),
             modifier = Modifier.clickable { onRegisterClick() }
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 32.dp),
+            color = Color(0xFFEEEEEE),
+            thickness = 1.dp
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "Entrar como fornecedor",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFFFF6F00),
+            modifier = Modifier.clickable { onSupplierClick() }
         )
     }
 }
