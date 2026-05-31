@@ -45,9 +45,9 @@ private val BlueWater = Color(0xFF039BE5)
 @Composable
 fun QuixadaMapView(
     modifier: Modifier = Modifier,
-    heightDp: Int = 280
+    heightDp: Int = 280,
+    stores: List<WaterGasStore> = remember { StoreRepository.getStores() }
 ) {
-    val stores = remember { StoreRepository.getStores() }
     var selectedStore by remember { mutableStateOf<WaterGasStore?>(null) }
 
     val quixadaCenter = LatLng(StoreRepository.QUIXADA_LAT, StoreRepository.QUIXADA_LNG)
@@ -98,7 +98,7 @@ fun QuixadaMapView(
                     state = rememberMarkerState(key = store.id.toString(), position = position),
                     title = store.name,
                     snippet = store.type.label,
-                    icon = BitmapDescriptorFactory.defaultMarker(markerColor), // Correção 1: Aplica a cor no marcador
+                    icon = BitmapDescriptorFactory.defaultMarker(markerColor),
                     onInfoWindowClick = {
                         selectedStore = store
                     }

@@ -16,12 +16,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import com.levi.qxdapp.data.local.StoreRepository
-import com.levi.qxdapp.domain.model.WaterGasStore
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +30,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.levi.qxdapp.data.local.StoreRepository
+import com.levi.qxdapp.domain.model.StoreType
+import com.levi.qxdapp.domain.model.WaterGasStore
 import com.levi.qxdapp.presentation.client.map.QuixadaMapView
 
 // cores para o tema
@@ -40,11 +41,22 @@ private val BackgroundGray = Color(0xFFF5F6FA)
 private val TextDark = Color(0xFF1A1A1A)
 private val GreenOpen = Color(0xFF34A853)
 private val RedClosed = Color(0xFFEA4335)
+private val OrangeGas = Color(0xFFFF6D00)
+private val BlueWater = Color(0xFF039BE5)
 
 @Composable
 fun HomeView(onSearchClick: (String) -> Unit = {}) {
     val listState = rememberLazyListState()
-    val stores = remember { StoreRepository.getStores() }
+    var selectedFilter by remember { mutableStateOf("Todos") }
+    
+    val filteredStores = remember(selectedFilter) {
+        when (selectedFilter) {
+            "Água" -> StoreRepository.getStoresByType(StoreType.WATER)
+            "Gás" -> StoreRepository.getStoresByType(StoreType.GAS)
+            "Abertos agora" -> StoreRepository.getOpenStores()
+            else -> StoreRepository.getStores()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -55,10 +67,16 @@ fun HomeView(onSearchClick: (String) -> Unit = {}) {
             state = listState,
             modifier = Modifier.fillMaxSize()
         ) {
-            item { HeaderSection(onSearchClick = onSearchClick) }
+            item { 
+                HeaderSection(
+                    selectedFilter = selectedFilter,
+                    onFilterChange = { selectedFilter = it },
+                    onSearchClick = onSearchClick
+                ) 
+            }
             item { QuixadaMapView() }
-            item { StoreListHeader(storeCount = stores.size) }
-            items(stores) { store ->
+            item { StoreListHeader(storeCount = filteredStores.size, filterName = selectedFilter) }
+            items(filteredStores) { store ->
                 val distance = when (store.id) {
                     1 -> "1.0km"
                     2 -> "1.2km"
@@ -73,10 +91,12 @@ fun HomeView(onSearchClick: (String) -> Unit = {}) {
                 Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                     StoreCard(
                         store = store,
-                        distance = distance
+                        distance = distance,
+                        filterMode = selectedFilter
                     )
                 }
             }
+            item { Spacer(modifier = Modifier.height(80.dp)) }
         }
 
         // Scrollbar vertical à direita
@@ -91,7 +111,11 @@ fun HomeView(onSearchClick: (String) -> Unit = {}) {
 }
 
 @Composable
-fun HeaderSection(onSearchClick: (String) -> Unit = {}) {
+fun HeaderSection(
+    selectedFilter: String,
+    onFilterChange: (String) -> Unit,
+    onSearchClick: (String) -> Unit = {}
+) {
     val corFundoTransparente = Color.White.copy(alpha = 0.15f)
 
     Column(
@@ -201,10 +225,10 @@ fun HeaderSection(onSearchClick: (String) -> Unit = {}) {
             items(filtros) { filter ->
                 FilterChipCustom(
                     text = filter,
-                    isSelected = filter == "Todos",
+                    isSelected = filter == selectedFilter,
                     colorPrimary = BluePrimary,
                     onClick = {
-                        onSearchClick(filter)
+                        onFilterChange(filter)
                     }
                 )
             }
@@ -234,7 +258,7 @@ fun FilterChipCustom(text: String, isSelected: Boolean, colorPrimary: Color, onC
 
 
 @Composable
-fun StoreListHeader(storeCount: Int) {
+fun StoreListHeader(storeCount: Int, filterName: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -242,7 +266,13 @@ fun StoreListHeader(storeCount: Int) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Locais de Venda", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextDark)
+        val title = when(filterName) {
+            "Água" -> "Distribuidoras de Água"
+            "Gás" -> "Pontos de Venda de Gás"
+            "Abertos agora" -> "Abertos no Momento"
+            else -> "Locais de Venda"
+        }
+        Text(title, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextDark)
         Surface(
             color = BluePrimary.copy(alpha = 0.1f),
             shape = RoundedCornerShape(12.dp)
@@ -259,7 +289,7 @@ fun StoreListHeader(storeCount: Int) {
 }
 
 @Composable
-fun StoreCard(store: WaterGasStore, distance: String) {
+fun StoreCard(store: WaterGasStore, distance: String, filterMode: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -267,11 +297,18 @@ fun StoreCard(store: WaterGasStore, distance: String) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
+            // Header Image/Color Area
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
-                    .background(Color.Gray)
+                    .background(
+                        when (store.type) {
+                            StoreType.WATER -> BlueWater.copy(alpha = 0.8f)
+                            StoreType.GAS -> OrangeGas.copy(alpha = 0.8f)
+                            StoreType.BOTH -> BluePrimary.copy(alpha = 0.8f)
+                        }
+                    )
             ) {
                 Row(
                     modifier = Modifier
@@ -282,9 +319,24 @@ fun StoreCard(store: WaterGasStore, distance: String) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(modifier = Modifier.size(40.dp).clip(RoundedCornerShape(8.dp)).background(Color.White))
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color.White),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            val initial = store.name.take(1).uppercase()
+                            Text(initial, color = BluePrimary, fontWeight = FontWeight.Bold)
+                        }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(store.name, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(
+                            store.name,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            modifier = Modifier.widthIn(max = 200.dp)
+                        )
                     }
 
                     Surface(
@@ -304,12 +356,37 @@ fun StoreCard(store: WaterGasStore, distance: String) {
 
 
             Column(modifier = Modifier.padding(12.dp)) {
+
+                Row(verticalAlignment = Alignment.Top) {
+                    Icon(
+                        Icons.Outlined.LocationOn,
+                        contentDescription = null,
+                        tint = Color.Gray,
+                        modifier = Modifier.size(14.dp).padding(top = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        store.address,
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        maxLines = 1
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text(store.deliveryTime, fontSize = 12.sp, color = Color.Gray)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Outlined.Schedule, null, tint = Color.Gray, modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(store.deliveryTime, fontSize = 12.sp, color = Color.Gray)
+                    }
+                    
                     Text(distance, fontSize = 12.sp, color = Color.Gray)
+                    
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
@@ -320,12 +397,37 @@ fun StoreCard(store: WaterGasStore, distance: String) {
                 Spacer(modifier = Modifier.height(12.dp))
 
 
+                // Prices based on filter
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (store.waterPrice.isNotEmpty()) {
-                        ProductChip("Água", store.waterPrice)
+                    when (filterMode) {
+                        "Água" -> {
+                            if (store.waterPrice.isNotEmpty()) {
+                                ProductChip("Garrafão 20L", store.waterPrice, BlueWater)
+                            }
+                        }
+                        "Gás" -> {
+                            if (store.gasPrice.isNotEmpty()) {
+                                ProductChip("Botijão 13kg", store.gasPrice, OrangeGas)
+                            }
+                        }
+                        else -> {
+                            if (store.waterPrice.isNotEmpty()) {
+                                ProductChip("Água", store.waterPrice, BlueWater)
+                            }
+                            if (store.gasPrice.isNotEmpty()) {
+                                ProductChip("Gás", store.gasPrice, OrangeGas)
+                            }
+                        }
                     }
-                    if (store.gasPrice.isNotEmpty()) {
-                        ProductChip("Gás", store.gasPrice)
+                }
+                
+
+                if (filterMode == "Gás") {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Outlined.Phone, null, tint = BluePrimary, modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(store.phone, fontSize = 12.sp, color = BluePrimary, fontWeight = FontWeight.Medium)
                     }
                 }
             }
@@ -334,16 +436,19 @@ fun StoreCard(store: WaterGasStore, distance: String) {
 }
 
 @Composable
-fun ProductChip(type: String, price: String) {
+fun ProductChip(type: String, price: String, color: Color = BluePrimary) {
     Surface(
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color(0xFFEEEEEE)),
-        color = Color.White
+        border = BorderStroke(1.dp, color.copy(alpha = 0.3f)),
+        color = color.copy(alpha = 0.05f)
     ) {
-        Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(type, fontSize = 12.sp, color = Color.DarkGray)
             Spacer(modifier = Modifier.width(8.dp))
-            Text(price, fontSize = 12.sp, color = BluePrimary, fontWeight = FontWeight.Bold)
+            Text(price, fontSize = 13.sp, color = color, fontWeight = FontWeight.Bold)
         }
     }
 }
