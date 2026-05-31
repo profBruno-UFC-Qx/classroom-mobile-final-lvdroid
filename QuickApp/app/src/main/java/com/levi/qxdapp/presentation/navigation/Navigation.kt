@@ -49,7 +49,7 @@ val bottomNavItems = listOf(
 
 
 @Composable
-fun MainScreen() {
+fun MainScreen(onLogoutClick: () -> Unit = {}) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -118,7 +118,7 @@ fun MainScreen() {
             }
             composable(BottomNavRoute.Profile.route) {
                 com.levi.qxdapp.presentation.client.profile.ClientProfileScreen(
-                    onLogoutClick = { /* TODO: navigate to login */ },
+                    onLogoutClick = onLogoutClick,
                     onSupplierClick = { navController.navigate("supplier_profile") }
                 )
             }
@@ -141,7 +141,7 @@ fun MainScreen() {
             composable("supplier_profile") {
                 com.levi.qxdapp.presentation.supplier.profile.SupplierProfileScreen(
                     onBackClick = { navController.popBackStack() },
-                    onLogoutClick = { /* TODO: navigate to login */ }
+                    onLogoutClick = onLogoutClick
                 )
             }
         }
