@@ -2,6 +2,7 @@ package com.levi.qxdapp.presentation.client.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
@@ -29,12 +31,16 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.levi.qxdapp.data.local.StoreRepository
+import com.levi.qxdapp.data.local.UserProfileManager
 import com.levi.qxdapp.domain.model.StoreType
 import com.levi.qxdapp.domain.model.WaterGasStore
 import com.levi.qxdapp.presentation.client.map.QuixadaMapView
@@ -49,10 +55,14 @@ private val OrangeGas = Color(0xFFFF6D00)
 private val BlueWater = Color(0xFF039BE5)
 
 @Composable
-fun HomeView(onSearchClick: (String) -> Unit = {}) {
+fun HomeView(
+    onProfileClick: () -> Unit = {},
+    onSearchClick: (String) -> Unit = {}
+) {
     val listState = rememberLazyListState()
     var selectedFilter by remember { mutableStateOf("Todos") }
     var searchQuery by remember { mutableStateOf("") }
+    var selectedNeighborhood by remember { mutableStateOf("Centro") }
     
     val filteredStores = remember(selectedFilter, searchQuery) {
         val baseStores = when (selectedFilter) {
@@ -79,7 +89,6 @@ fun HomeView(onSearchClick: (String) -> Unit = {}) {
         }
     }
 
-    // Determina o modo de exibição baseado na busca ou filtro
     val effectiveFilterMode = remember(selectedFilter, searchQuery) {
         val query = searchQuery.lowercase().trim()
         when {
@@ -103,10 +112,13 @@ fun HomeView(onSearchClick: (String) -> Unit = {}) {
                     selectedFilter = selectedFilter,
                     onFilterChange = { 
                         selectedFilter = it
-                        searchQuery = "" // Limpa a busca ao trocar de categoria
+                        searchQuery = ""
                     },
                     searchQuery = searchQuery,
-                    onSearchQueryChange = { searchQuery = it }
+                    onSearchQueryChange = { searchQuery = it },
+                    onProfileClick = onProfileClick,
+                    selectedNeighborhood = selectedNeighborhood,
+                    onNeighborhoodChange = { selectedNeighborhood = it }
                 ) 
             }
             item { QuixadaMapView(stores = filteredStores) }
@@ -143,17 +155,54 @@ fun HomeView(onSearchClick: (String) -> Unit = {}) {
                 .padding(end = 4.dp, top = 4.dp, bottom = 4.dp)
         )
     }
-}
-
-@Composable
+}@Composable
 fun HeaderSection(
     selectedFilter: String,
     onFilterChange: (String) -> Unit,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
+    onProfileClick: () -> Unit,
+    selectedNeighborhood: String,
+    onNeighborhoodChange: (String) -> Unit,
     onSearchClick: (String) -> Unit = {}
 ) {
     val corFundoTransparente = Color.White.copy(alpha = 0.15f)
+    val context = LocalContext.current
+    var photoPath by remember { mutableStateOf<String?>(null) }
+    var initials by remember { mutableStateOf("JS") }
+
+    LaunchedEffect(Unit) {
+        photoPath = UserProfileManager.getPhotoPath(context)
+        val firstName = UserProfileManager.getFirstName(context)
+        val lastName = UserProfileManager.getLastName(context)
+        initials = "${firstName.firstOrNull() ?: ""}${lastName.firstOrNull() ?: ""}".uppercase()
+    }
+
+    val bitmap = remember(photoPath) {
+        if (photoPath != null) {
+            try {
+                android.graphics.BitmapFactory.decodeFile(photoPath)
+            } catch (e: Exception) {
+                null
+            }
+        } else {
+            null
+        }
+    }
+
+    var dropdownExpanded by remember { mutableStateOf(false) }
+    val bairrosQuixada = listOf(
+        "Centro",
+        "Campo Novo",
+        "Carrascal",
+        "Cedro",
+        "Planalto Universitário",
+        "Putiú",
+        "Batalhão",
+        "Triângulo",
+        "Alto São Francisco",
+        "São João"
+    )
 
     Column(
         modifier = Modifier
@@ -172,12 +221,22 @@ fun HeaderSection(
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .background(corFundoTransparente, CircleShape),
+                    .clip(CircleShape)
+                    .background(corFundoTransparente)
+                    .clickable { onProfileClick() },
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "JS", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = "Foto de perfil",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Text(text = initials, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                }
             }
-
 
             Column(
                 modifier = Modifier
@@ -189,23 +248,61 @@ fun HeaderSection(
                     color = Color.White.copy(alpha = 0.8f),
                     fontSize = 12.sp
                 )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Outlined.LocationOn,
-                        contentDescription = "Ícone Localização",
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "Centro, Quixadá - CE",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
+                Box {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { dropdownExpanded = true }
+                            .padding(vertical = 4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.LocationOn,
+                            contentDescription = "Ícone Localização",
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "$selectedNeighborhood, Quixadá - CE",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                        Spacer(modifier = Modifier.width(2.dp))
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Selecionar Bairro",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = dropdownExpanded,
+                        onDismissRequest = { dropdownExpanded = false },
+                        modifier = Modifier
+                            .background(Color.White)
+                            .width(220.dp)
+                    ) {
+                        bairrosQuixada.forEach { bairro ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = bairro,
+                                        color = if (bairro == selectedNeighborhood) BluePrimary else Color.Black,
+                                        fontWeight = if (bairro == selectedNeighborhood) FontWeight.Bold else FontWeight.Normal
+                                    )
+                                },
+                                onClick = {
+                                    onNeighborhoodChange(bairro)
+                                    dropdownExpanded = false
+                                }
+                            )
+                        }
+                    }
                 }
             }
-
 
             Box(
                 modifier = Modifier

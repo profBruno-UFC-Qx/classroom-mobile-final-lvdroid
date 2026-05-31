@@ -98,9 +98,20 @@ fun MainScreen() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavRoute.Home.route) {
-                HomeView(onSearchClick = { filter -> 
-                    navController.navigate("search_products/$filter")
-                })
+                HomeView(
+                    onProfileClick = {
+                        navController.navigate(BottomNavRoute.Profile.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    onSearchClick = { filter -> 
+                        navController.navigate("search_products/$filter")
+                    }
+                )
             }
             composable(BottomNavRoute.Orders.route) {
                 OrdersView()
