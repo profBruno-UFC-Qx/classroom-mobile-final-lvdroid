@@ -18,6 +18,7 @@ import com.levi.qxdapp.presentation.auth.ForgotPasswordScreen
 import com.levi.qxdapp.presentation.auth.LoginScreen
 import com.levi.qxdapp.presentation.auth.RegisterScreen
 import com.levi.qxdapp.presentation.navigation.MainScreen
+import com.levi.qxdapp.presentation.supplier.profile.SupplierProfileScreen
 import com.levi.qxdapp.ui.theme.QxdAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -45,6 +46,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onRegisterClick = {
                                     navController.navigate("register")
+                                },
+                                onSupplierClick = {
+                                    navController.navigate("supplier_profile")
                                 }
                             )
                         }
@@ -70,6 +74,18 @@ class MainActivity : ComponentActivity() {
                                 onLogoutClick = {
                                     navController.navigate("login") {
                                         popUpTo("home") { inclusive = true }
+                                    }
+                                }
+                            )
+                        }
+                        composable("supplier_profile") {
+                            SupplierProfileScreen(
+                                onBackClick = {
+                                    navController.popBackStack()
+                                },
+                                onLogoutClick = {
+                                    navController.navigate("login") {
+                                        popUpTo("supplier_profile") { inclusive = true }
                                     }
                                 }
                             )
