@@ -193,9 +193,7 @@ fun HeaderSection(onSearchClick: (String) -> Unit = {}) {
                     isSelected = filter == "Todos",
                     colorPrimary = BluePrimary,
                     onClick = {
-                        if (filter == "Todos" || filter == "Água" || filter == "Gás") {
-                            onSearchClick(filter)
-                        }
+                        onSearchClick(filter)
                     }
                 )
             }
