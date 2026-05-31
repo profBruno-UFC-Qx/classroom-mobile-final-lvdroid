@@ -22,12 +22,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -44,7 +42,6 @@ private val RedClosed = Color(0xFFEA4335)
 private val OrangeGas = Color(0xFFFF6D00)
 private val BlueWater = Color(0xFF039BE5)
 
-
 @Composable
 fun QuixadaMapView(
     modifier: Modifier = Modifier,
@@ -57,7 +54,6 @@ fun QuixadaMapView(
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(quixadaCenter, StoreRepository.DEFAULT_ZOOM)
     }
-
 
     val quixadaBounds = remember {
         LatLngBounds(
@@ -75,9 +71,9 @@ fun QuixadaMapView(
             properties = MapProperties(
                 mapType = MapType.NORMAL,
                 isMyLocationEnabled = false,
-                latLngBoundsForCameraTarget = quixadaBounds,
                 minZoomPreference = 13f,
-                maxZoomPreference = 18f
+                maxZoomPreference = 18f,
+                latLngBoundsForCameraTarget = quixadaBounds
             ),
             uiSettings = MapUiSettings(
                 zoomControlsEnabled = false,
@@ -89,25 +85,25 @@ fun QuixadaMapView(
                 selectedStore = null
             }
         ) {
-            // Marcadores para cada loja
+
             stores.forEach { store ->
                 val position = LatLng(store.latitude, store.longitude)
                 val markerColor = when (store.type) {
-                    StoreType.WATER -> BitmapDescriptorFactory.HUE_AZURE
-                    StoreType.GAS -> BitmapDescriptorFactory.HUE_ORANGE
-                    StoreType.BOTH -> BitmapDescriptorFactory.HUE_GREEN
+                    StoreType.WATER -> 210.0f
+                    StoreType.GAS -> 30.0f
+                    StoreType.BOTH -> 120.0f
                 }
 
                 MarkerInfoWindowContent(
-                    state = MarkerState(position = position),
-                    icon = BitmapDescriptorFactory.defaultMarker(markerColor),
+                    state = rememberMarkerState(key = store.id.toString(), position = position),
                     title = store.name,
                     snippet = store.type.label,
+                    icon = BitmapDescriptorFactory.defaultMarker(markerColor), // Correção 1: Aplica a cor no marcador
                     onInfoWindowClick = {
                         selectedStore = store
                     }
                 ) { marker ->
-                    // InfoWindow customizada
+
                     Surface(
                         shape = RoundedCornerShape(12.dp),
                         color = Color.White,
@@ -171,7 +167,7 @@ fun QuixadaMapView(
             }
         }
 
-
+        // Legenda (Canto Superior Esquerdo)
         Surface(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -194,7 +190,7 @@ fun QuixadaMapView(
             }
         }
 
-        // Contador de locais no canto superior direito
+
         Surface(
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -212,7 +208,7 @@ fun QuixadaMapView(
             )
         }
 
-
+        // Modal de Detalhes da Loja
         AnimatedVisibility(
             visible = selectedStore != null,
             enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
@@ -245,7 +241,6 @@ private fun LegendItem(color: Color, text: String) {
         Text(text, fontSize = 10.sp, color = Color.DarkGray)
     }
 }
-
 
 @Composable
 private fun StoreDetailCard(
