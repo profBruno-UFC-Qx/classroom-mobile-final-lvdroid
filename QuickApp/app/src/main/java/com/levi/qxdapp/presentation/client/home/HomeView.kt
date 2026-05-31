@@ -29,13 +29,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.levi.qxdapp.presentation.client.map.QuixadaMapView
 
 // cores para o tema
-val BluePrimary = Color(0xFF1964C3)
-val BackgroundGray = Color(0xFFF5F6FA)
-val TextDark = Color(0xFF1A1A1A)
-val GreenOpen = Color(0xFF34A853)
-val RedClosed = Color(0xFFEA4335)
+private val BluePrimary = Color(0xFF1964C3)
+private val BackgroundGray = Color(0xFFF5F6FA)
+private val TextDark = Color(0xFF1A1A1A)
+private val GreenOpen = Color(0xFF34A853)
+private val RedClosed = Color(0xFFEA4335)
 
 @Composable
 fun HomeView(onSearchClick: (String) -> Unit = {}) {
@@ -51,7 +52,7 @@ fun HomeView(onSearchClick: (String) -> Unit = {}) {
             modifier = Modifier.fillMaxSize()
         ) {
             item { HeaderSection(onSearchClick = onSearchClick) }
-            item { MapPlaceholder() }
+            item { QuixadaMapView() }
             item { StoreListHeader() }
             items(3) { index ->
                 val isOpen = index != 2
@@ -222,18 +223,7 @@ fun FilterChipCustom(text: String, isSelected: Boolean, colorPrimary: Color, onC
     }
 }
 
-@Composable
-fun MapPlaceholder() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .background(Color(0xFFE0E0E0)),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Mapa (Google Maps API)", color = Color.DarkGray, fontWeight = FontWeight.Bold)
-    }
-}
+// MapPlaceholder foi substituído por QuixadaMapView() em presentation/client/map/MapScreen.kt
 
 @Composable
 fun StoreListHeader() {

@@ -166,6 +166,8 @@ fun ProductsScreen(initialFilter: String = "Todos", onBackClick: () -> Unit = {}
                         },
                         shape = RoundedCornerShape(25.dp),
                         colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color(0xFF1A1A1A),
+                            unfocusedTextColor = Color(0xFF1A1A1A),
                             focusedContainerColor = BackgroundGray,
                             unfocusedContainerColor = BackgroundGray,
                             focusedBorderColor = Color.Transparent,

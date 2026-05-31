@@ -93,6 +93,8 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color(0xFF1A1A1A),
+                    unfocusedTextColor = Color(0xFF1A1A1A),
                     unfocusedBorderColor = Color(0xFFE0E0E0),
                     focusedBorderColor = Color(0xFF1565C0)
                 ),
@@ -118,6 +120,8 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color(0xFF1A1A1A),
+                    unfocusedTextColor = Color(0xFF1A1A1A),
                     unfocusedBorderColor = Color(0xFFE0E0E0),
                     focusedBorderColor = Color(0xFF1565C0)
                 ),
@@ -144,6 +148,8 @@ fun RegisterScreen(
                 shape = RoundedCornerShape(12.dp),
                 visualTransformation = PasswordVisualTransformation(),
                 colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color(0xFF1A1A1A),
+                    unfocusedTextColor = Color(0xFF1A1A1A),
                     unfocusedBorderColor = Color(0xFFE0E0E0),
                     focusedBorderColor = Color(0xFF1565C0)
                 ),
