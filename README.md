@@ -1,5 +1,44 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/AR7CADm8)
 [![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=23200868)
+  ## :Esqueleto do desenvolvimento 
+  QuickApp/app/src/main/java/com/levi/qxdapp/
+│
+├── MainActivity.kt                  # Ponto de entrada do app, gerencia o fluxo global de Login x App
+│
+├── data/local/
+│   ├── UserProfileManager.kt        # Gerenciamento de estado e persistência local via SharedPreferences
+│   └── StoreRepository.kt           # Repositório de dados simulando distribuidores de água/gás
+│
+├── domain/model/
+│   └── WaterGasStore.kt             # Modelo de dados estruturado do ponto de venda
+│
+├── presentation/
+│   ├── auth/
+│   │   ├── LoginScreen.kt           # Tela de autenticação com validações
+│   │   ├── register.kt              # Tela de criação de conta persistindo dados locais
+│   │   └── ForgotPasswordScreen.kt  # Tela de simulação de redefinição de senha
+│   │
+│   ├── client/
+│   │   ├── home/
+│   │   │   └── HomeView.kt          # Tela principal (Feed de locais, barra de pesquisa, filtros e dropdown de bairros)
+│   │   ├── map/
+│   │   │   └── MapScreen.kt         # Integração com Google Maps e marcadores diferenciados
+│   │   ├── order/
+│   │   │   └── OrdersView.kt        # Histórico de pedidos (ativos/concluídos) com suporte
+│   │   ├── products/
+│   │   │   └── ProductsScreen.kt    # Catálogo de produtos, busca em tempo real e detalhes de preços
+│   │   └── profile/
+│   │       └── ClientProfileScreen.kt # Gerenciador de perfil (Upload de foto real, dados pessoais e múltiplos endereços)
+│   │
+│   ├── supplier/
+│   │   └── profile/
+│   │       └── SupplierProfileScreen.kt # Tela dedicada para a área do fornecedor
+│   │
+│   └── navigation/
+│       └── Navigation.kt            # Definição das rotas de navegação interna e barra inferior (BottomNavBar)
+
+
+
 
 # :checkered_flag: QuickQXD
 
