@@ -64,7 +64,7 @@ object StoreRepository {
         ),
         WaterGasStore(
             id = 4,
-            name = "Campo Novo Comércio de Gás e Bebidas (Supergasbras)",
+            name = "Campo Novo Água e Gás",
             latitude = -4.9742,
             longitude = -39.0122,
             type = StoreType.BOTH,

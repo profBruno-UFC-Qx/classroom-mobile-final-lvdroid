@@ -19,6 +19,9 @@ import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import com.levi.qxdapp.data.local.StoreRepository
+import com.levi.qxdapp.domain.model.WaterGasStore
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +44,7 @@ private val RedClosed = Color(0xFFEA4335)
 @Composable
 fun HomeView(onSearchClick: (String) -> Unit = {}) {
     val listState = rememberLazyListState()
+    val stores = remember { StoreRepository.getStores() }
 
     Box(
         modifier = Modifier
@@ -53,16 +57,23 @@ fun HomeView(onSearchClick: (String) -> Unit = {}) {
         ) {
             item { HeaderSection(onSearchClick = onSearchClick) }
             item { QuixadaMapView() }
-            item { StoreListHeader() }
-            items(3) { index ->
-                val isOpen = index != 2
+            item { StoreListHeader(storeCount = stores.size) }
+            items(stores) { store ->
+                val distance = when (store.id) {
+                    1 -> "1.0km"
+                    2 -> "1.2km"
+                    3 -> "1.5km"
+                    4 -> "3.0km"
+                    5 -> "2.0km"
+                    6 -> "1.8km"
+                    7 -> "1.4km"
+                    8 -> "2.5km"
+                    else -> "1.2km"
+                }
                 Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                     StoreCard(
-                        name = if (index == 0) "JP Águas e Gás" else "Gás Express Quixadá",
-                        isOpen = isOpen,
-                        deliveryTime = if (index == 0) "~15 min" else "~25 min",
-                        distance = if (index == 0) "1.2km" else "2.5km",
-                        rating = if (index == 0) "4.8" else "4.5"
+                        store = store,
+                        distance = distance
                     )
                 }
             }
@@ -221,10 +232,9 @@ fun FilterChipCustom(text: String, isSelected: Boolean, colorPrimary: Color, onC
     }
 }
 
-// MapPlaceholder foi substituído por QuixadaMapView() em presentation/client/map/MapScreen.kt
 
 @Composable
-fun StoreListHeader() {
+fun StoreListHeader(storeCount: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -238,7 +248,7 @@ fun StoreListHeader() {
             shape = RoundedCornerShape(12.dp)
         ) {
             Text(
-                "3 locais",
+                "$storeCount locais",
                 color = BluePrimary,
                 fontSize = 12.sp,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -249,7 +259,7 @@ fun StoreListHeader() {
 }
 
 @Composable
-fun StoreCard(name: String, isOpen: Boolean, deliveryTime: String, distance: String, rating: String) {
+fun StoreCard(store: WaterGasStore, distance: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -274,16 +284,16 @@ fun StoreCard(name: String, isOpen: Boolean, deliveryTime: String, distance: Str
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(modifier = Modifier.size(40.dp).clip(RoundedCornerShape(8.dp)).background(Color.White))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(name, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(store.name, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     }
 
                     Surface(
-                        color = if (isOpen) GreenOpen else RedClosed,
-                        shape = RoundedCornerShape(12.dp)
+                        color = if (store.isOpen) GreenOpen.copy(alpha = 0.15f) else RedClosed.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
-                            text = if (isOpen) "• ABERTO" else "FECHADO",
-                            color = Color.White,
+                            text = if (store.isOpen) "● ABERTO" else "● FECHADO",
+                            color = if (store.isOpen) GreenOpen else RedClosed,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -298,12 +308,12 @@ fun StoreCard(name: String, isOpen: Boolean, deliveryTime: String, distance: Str
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text(deliveryTime, fontSize = 12.sp, color = Color.Gray)
+                    Text(store.deliveryTime, fontSize = 12.sp, color = Color.Gray)
                     Text(distance, fontSize = 12.sp, color = Color.Gray)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xFFFFC107), modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(rating, fontSize = 12.sp, color = Color.Gray)
+                        Text(String.format("%.1f", store.rating), fontSize = 12.sp, color = Color.Gray)
                     }
                 }
 
@@ -311,8 +321,12 @@ fun StoreCard(name: String, isOpen: Boolean, deliveryTime: String, distance: Str
 
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ProductChip("Água", "R$ 12.00")
-                    ProductChip("Gás", "R$ 115.00")
+                    if (store.waterPrice.isNotEmpty()) {
+                        ProductChip("Água", store.waterPrice)
+                    }
+                    if (store.gasPrice.isNotEmpty()) {
+                        ProductChip("Gás", store.gasPrice)
+                    }
                 }
             }
         }
