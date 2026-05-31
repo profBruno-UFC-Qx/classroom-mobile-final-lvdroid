@@ -12,7 +12,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.LocationOn
@@ -27,7 +29,9 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.levi.qxdapp.data.local.StoreRepository
@@ -48,13 +52,40 @@ private val BlueWater = Color(0xFF039BE5)
 fun HomeView(onSearchClick: (String) -> Unit = {}) {
     val listState = rememberLazyListState()
     var selectedFilter by remember { mutableStateOf("Todos") }
+    var searchQuery by remember { mutableStateOf("") }
     
-    val filteredStores = remember(selectedFilter) {
-        when (selectedFilter) {
+    val filteredStores = remember(selectedFilter, searchQuery) {
+        val baseStores = when (selectedFilter) {
             "Água" -> StoreRepository.getStoresByType(StoreType.WATER)
             "Gás" -> StoreRepository.getStoresByType(StoreType.GAS)
             "Abertos agora" -> StoreRepository.getOpenStores()
             else -> StoreRepository.getStores()
+        }
+
+        if (searchQuery.isBlank()) {
+            baseStores
+        } else {
+            val query = searchQuery.lowercase().trim()
+            baseStores.filter { store ->
+                val matchesName = store.name.lowercase().contains(query)
+                val isWaterQuery = query.contains("água") || query.contains("agua")
+                val isGasQuery = query.contains("gás") || query.contains("gas")
+                
+                val matchesWater = isWaterQuery && (store.type == StoreType.WATER || store.type == StoreType.BOTH)
+                val matchesGas = isGasQuery && (store.type == StoreType.GAS || store.type == StoreType.BOTH)
+                
+                matchesName || matchesWater || matchesGas
+            }
+        }
+    }
+
+    // Determina o modo de exibição baseado na busca ou filtro
+    val effectiveFilterMode = remember(selectedFilter, searchQuery) {
+        val query = searchQuery.lowercase().trim()
+        when {
+            query.contains("água") || query.contains("agua") -> "Água"
+            query.contains("gás") || query.contains("gas") -> "Gás"
+            else -> selectedFilter
         }
     }
 
@@ -70,12 +101,16 @@ fun HomeView(onSearchClick: (String) -> Unit = {}) {
             item { 
                 HeaderSection(
                     selectedFilter = selectedFilter,
-                    onFilterChange = { selectedFilter = it },
-                    onSearchClick = onSearchClick
+                    onFilterChange = { 
+                        selectedFilter = it
+                        searchQuery = "" // Limpa a busca ao trocar de categoria
+                    },
+                    searchQuery = searchQuery,
+                    onSearchQueryChange = { searchQuery = it }
                 ) 
             }
-            item { QuixadaMapView() }
-            item { StoreListHeader(storeCount = filteredStores.size, filterName = selectedFilter) }
+            item { QuixadaMapView(stores = filteredStores) }
+            item { StoreListHeader(storeCount = filteredStores.size, filterName = effectiveFilterMode) }
             items(filteredStores) { store ->
                 val distance = when (store.id) {
                     1 -> "1.0km"
@@ -92,7 +127,7 @@ fun HomeView(onSearchClick: (String) -> Unit = {}) {
                     StoreCard(
                         store = store,
                         distance = distance,
-                        filterMode = selectedFilter
+                        filterMode = effectiveFilterMode
                     )
                 }
             }
@@ -114,6 +149,8 @@ fun HomeView(onSearchClick: (String) -> Unit = {}) {
 fun HeaderSection(
     selectedFilter: String,
     onFilterChange: (String) -> Unit,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
     onSearchClick: (String) -> Unit = {}
 ) {
     val corFundoTransparente = Color.White.copy(alpha = 0.15f)
@@ -192,27 +229,35 @@ fun HeaderSection(
             }
         }
         Spacer(modifier = Modifier.height(20.dp))
-        Box(modifier = Modifier.fillMaxWidth().clickable { onSearchClick("Todos") }) {
-            OutlinedTextField(
-                value = "",
-                onValueChange = {},
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Buscar fornecedor ou produto...", color = Color.Gray) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar", tint = Color.Gray) },
-                shape = RoundedCornerShape(50),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent,
-                    disabledContainerColor = Color.White,
-                    disabledBorderColor = Color.Transparent,
-                    disabledTextColor = Color.Black
-                ),
-                singleLine = true,
-                enabled = false
-            )
-        }
+        
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = onSearchQueryChange,
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("Buscar água, gás ou fornecedor...", color = Color.Gray) },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar", tint = Color.Gray) },
+            trailingIcon = {
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { onSearchQueryChange("") }) {
+                        Icon(Icons.Default.Close, contentDescription = "Limpar", tint = Color.Gray)
+                    }
+                }
+            },
+            shape = RoundedCornerShape(50),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+                cursorColor = Color.Black
+            ),
+            textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
+            singleLine = true,
+            enabled = true,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 

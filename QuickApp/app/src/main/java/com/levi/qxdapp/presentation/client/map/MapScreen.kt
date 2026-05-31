@@ -238,7 +238,7 @@ private fun LegendItem(color: Color, text: String) {
                 .background(color)
         )
         Spacer(modifier = Modifier.width(6.dp))
-        Text(text, fontSize = 10.sp, color = Color.DarkGray)
+        Text(text, fontSize = 10.sp, color = Color.Black)
     }
 }
 
@@ -444,7 +444,7 @@ private fun PriceChip(
                 modifier = Modifier.size(16.dp)
             )
             Spacer(modifier = Modifier.width(6.dp))
-            Text(label, fontSize = 12.sp, color = Color.DarkGray)
+            Text(label, fontSize = 12.sp, color = Color.Black)
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 price,

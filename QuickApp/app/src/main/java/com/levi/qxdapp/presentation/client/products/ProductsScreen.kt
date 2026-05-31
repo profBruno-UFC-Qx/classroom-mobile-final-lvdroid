@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.LocationOn
@@ -114,13 +115,26 @@ val productsData = listOf(
 @Composable
 fun ProductsScreen(initialFilter: String = "Todos", onBackClick: () -> Unit = {}) {
     var selectedFilter by remember { mutableStateOf(initialFilter) }
+    var searchQuery by remember { mutableStateOf("") }
     var selectedProduct by remember { mutableStateOf<ProductInfo?>(null) }
 
-    val filteredProducts = productsData.filter {
-        when (selectedFilter) {
-            "Água" -> !it.isGas
-            "Gás" -> it.isGas
-            else -> true
+    val filteredProducts = remember(selectedFilter, searchQuery) {
+        productsData.filter {
+            val matchesFilter = when (selectedFilter) {
+                "Água" -> !it.isGas
+                "Gás" -> it.isGas
+                else -> true
+            }
+            
+            val query = searchQuery.lowercase().trim()
+            val matchesSearch = if (query.isEmpty()) true else {
+                it.name.lowercase().contains(query) || 
+                it.subtitle.lowercase().contains(query) ||
+                ((query == "água" || query == "agua") && !it.isGas) ||
+                ((query == "gás" || query == "gas") && it.isGas)
+            }
+            
+            matchesFilter && matchesSearch
         }
     }
 
@@ -145,8 +159,8 @@ fun ProductsScreen(initialFilter: String = "Todos", onBackClick: () -> Unit = {}
                         )
                     }
                     OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
                         modifier = Modifier
                             .weight(1f)
                             .padding(end = 8.dp),
@@ -164,16 +178,25 @@ fun ProductsScreen(initialFilter: String = "Todos", onBackClick: () -> Unit = {}
                                 tint = Color.Gray
                             )
                         },
+                        trailingIcon = {
+                            if (searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { searchQuery = "" }) {
+                                    Icon(Icons.Default.Close, contentDescription = "Limpar", tint = Color.Gray)
+                                }
+                            }
+                        },
                         shape = RoundedCornerShape(25.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color(0xFF1A1A1A),
-                            unfocusedTextColor = Color(0xFF1A1A1A),
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
                             focusedContainerColor = BackgroundGray,
                             unfocusedContainerColor = BackgroundGray,
                             focusedBorderColor = Color.Transparent,
-                            unfocusedBorderColor = Color.Transparent
+                            unfocusedBorderColor = Color.Transparent,
+                            cursorColor = Color.Black
                         ),
-                        singleLine = true
+                        singleLine = true,
+                        enabled = true
                     )
                 }
 
